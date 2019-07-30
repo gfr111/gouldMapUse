@@ -23,34 +23,55 @@
                 <input placeholder="位置/地名/场馆" class="searchInput"  ng-model="keyword" />
                 <text class="searchBtn" ng-click="searchEvent()">搜索</text>
             </div>
+            <ul class="searchResultBox" ng-if="showSearch" ng-cloak="">
+                <li ng-repeat="item in searchResultList" ng-click="chooseSearch(item)">{{item.name}}</li>
+            </ul>
         </div>
-        <div class="navBox">
-              <ul>
-                  <li ng-repeat="item in navList"  ng-click="selectNav(item.id)">
-                      <div ng-bind="item.name"></div>
-                      <span class="{{item.selected?'selected':'borders'}}"  ></span>
-                  </li>
-              </ul>
+        <!--<div class="navBox">-->
+              <!--<ul>-->
+                  <!--<li ng-repeat="item in navList"  ng-click="selectNav(item.id)">-->
+                      <!--<div ng-bind="item.name"></div>-->
+                      <!--<span class="{{item.selected?'selected':'borders'}}"  ></span>-->
+                  <!--</li>-->
+              <!--</ul>-->
+        <!--</div>-->
+        <div class="rollBox">
+            <div ng-repeat="item in navList"  ng-click="selectNav(item.id)">
+                <span  ng-bind="item.name" ></span>
+                <span class="{{item.selected?'selected':'borders'}}"  ></span>
+            </div>
         </div>
     </div>
     <div id="container" tabindex="0"></div>
     <image src="/static/img/position.png" id="positionIcon" class="{{showClubCard?'bottomHas':'noBottom'}}"/>
-    <div class="clubCard " ng-if="showClubCard" ng-click="toDetail()" ng-cloak="">
-        <span class="lines"></span>
-       <div style="display: flex;align-items: center;justify-content: space-between;width: 100%;position: relative;">
-           <div class="clubMess" >
-               <image class="logo" ng-src="{{conditions.clubMessage.logo?conditions.clubMessage.logo:'/static/img/logo.png'}}"/>
-               <div class="areaName" ng-bind="conditions.clubMessage.districtName"></div>
-               <div class="clubName" ng-bind="conditions.clubMessage.name"></div>
-               <div class="tipsBox">
-                   <span ng-bind="conditions.clubMessage.fit88FreeItems"></span>
-               </div>
-           </div>
-           <div class="imgBox">
-               <image src="/static/img/88fit.png" class="fitIcon" ng-if="conditions.clubMessage.fit88Enabled"/>
-               <image ng-src="{{conditions.clubMessage.logo?conditions.clubMessage.logo:'/static/img/defaultClub.jpg'}}"  class="clubPicture" />
-           </div>
-       </div>
+    <div style="position: fixed;bottom:0" ng-if="showClubCard" ng-cloak="">
+        <div class="clubCard " ng-click="toDetail()" >
+            <span class="lines"></span>
+            <div style="display: flex;align-items: center;justify-content: space-between;width: 100%;position: relative;">
+                <div class="clubMess" >
+                    <image class="logo" ng-src="{{conditions.clubMessage.logo?conditions.clubMessage.logo:'/static/img/logo.png'}}"/>
+                    <div class="areaName" ng-bind="conditions.clubMessage.districtName"></div>
+                    <div class="clubName" ng-bind="conditions.clubMessage.name"></div>
+                    <div class="tipsBox">
+                        <span ng-bind="conditions.clubMessage.fit88FreeItems"></span>
+                    </div>
+                </div>
+                <div class="imgBox">
+                    <image src="/static/img/88fit.png" class="fitIcon" ng-if="conditions.clubMessage.fit88Enabled"/>
+                    <image ng-src="{{conditions.clubMessage.logo?conditions.clubMessage.logo:'/static/img/defaultClub.jpg'}}"  class="clubPicture" />
+                </div>
+            </div>
+        </div>
+        <div class="openTimeBox"  ng-if="conditions.clubMessage.fit88Enabled">
+            <div class="openTimeLeft">
+                <img src="/static/img/openTime.png" class="openTimeIcon"/>
+                <div class="timeBoxs">
+                    <span>活动开放日期</span>
+                    <span>{{conditions.clubMessage.fit88Time}}</span>
+                </div>
+            </div>
+            <div class="openTimeRight" ng-click="toDetail()" >查看详情</div>
+        </div>
     </div>
 </div>
 <script th:inline="javascript">

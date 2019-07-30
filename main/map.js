@@ -1,6 +1,7 @@
 (function () {
     function listCtrl($scope, $http){
         $scope.showClubCard=false;
+        $scope.showSearch=false;
         if (!$scope.$$phase) $scope.$apply();
         var map = new AMap.Map('container',{
             resizeEnable: true,
@@ -66,9 +67,13 @@
                 }else if (arr[i].clubType === 4) {
                     img='https://bocai-center.oss-cn-hangzhou.aliyuncs.com/center_manager/static_img/icon2.png';
                 }else if (arr[i].clubType === 5) {
-                    img='https://bocai-center.oss-cn-hangzhou.aliyuncs.com/center_manager/static_img/icon5.png';
+                    img='https://bocai-center.oss-cn-hangzhou.aliyuncs.com/center_manager/static_img/icon9.png';
                 }else if (arr[i].clubType === 6) {
-                    img='https://bocai-center.oss-cn-hangzhou.aliyuncs.com/center_manager/static_img/icon6.png';
+                    img='https://bocai-center.oss-cn-hangzhou.aliyuncs.com/center_manager/static_img/icon7.png';
+                }else if (arr[i].clubType === 7) {
+                    img='https://bocai-center.oss-cn-hangzhou.aliyuncs.com/center_manager/static_img/icon8.png';
+                }else if (arr[i].clubType === 8) {
+                    img='https://bocai-center.oss-cn-hangzhou.aliyuncs.com/center_manager/static_img/icon10.png';
                 }
                 var icon = new AMap.Icon({
                     image: img,
@@ -100,7 +105,12 @@
         }
         $scope.clubType=-1;
         function clickHandler(e) {
-            var id=e.target.getExtData();
+            var id=null;
+            if(e.target==undefined){
+                id=e;
+            }else{
+                id=e.target.getExtData();
+            }
             for(var i=0,len=clubs.length;i<len;i++){
                  if(id==clubs[i].id){
                      $scope.conditions.clubMessage=clubs[i];
@@ -116,18 +126,20 @@
          $scope.navList=[
             {name:'全部',id:0,selected:true},
             {name:'健身',id:1,selected:false},
-            {name:'场馆',id:2,selected:false},
+            {name:'综合馆',id:2,selected:false},
             {name:'篮球',id:3,selected:false},
             {name:'游泳',id:4,selected:false},
-            {name:'羽毛球',id:5,selected:false},
-            {name:'瑜伽',id:6,selected:false}
+            {name:'体适能',id:5,selected:false},
+            {name:'足球',id:6,selected:false},
+            {name:'皮划艇',id:7,selected:false},
+             {name:'滑步车',id:8,selected:false}
         ];
          var list=angular.copy(clubs);
          $scope.selectNav=function (id) {
              $scope.clubType=id;
              $scope.keyword='';
              map.setZoom(14);
-             addMarker($scope.position.lng, $scope.position.lat);
+             $scope.showClubCard=false;
              if (!$scope.$$phase) $scope.$apply();
              for(var i=0,len=$scope.navList.length;i<len;i++){
                  if(id==$scope.navList[i].id){
@@ -157,12 +169,13 @@
                  clubType:$scope.clubType==0?-1:$scope.clubType,
                  keyword:$scope.keyword
              }
-             if($scope.keyword==undefined){
-                 return ;
+             if($scope.keyword==undefined||$scope.keyword==''){
+                return alert('请输入关键字！')
              }else{
                  $http.post('../api/fit88/search',data).then(function (resp) {
                      if(resp.data.data.length!=0){
-                         mapInitialization(resp.data.data);
+                         $scope.showSearch=true;
+                         $scope.searchResultList=resp.data.data;
                      }else{
                         return alert('没有相关场馆')
                      }
@@ -170,7 +183,13 @@
 
                  })
              }
-
+         };
+         $scope.chooseSearch=function (item) {
+             //搜索结果点击后的数据
+             map.setCenter([item.longitude, item.latitude]);
+             clickHandler(item.id)
+             $scope.showSearch=false;
+             if (!$scope.$$phase) $scope.$apply();
 
          }
     }
@@ -279,6 +298,17 @@
         $scope.rerurnIndex=function () {
             window.location.href='web/h5/88fit';
         };
+      window.onload=function () {
+          var mySwiper = new Swiper('.swiper-container',{
+              autoplay: true,//可选选项，自动滑动
+              speed:300,
+              pagination: {
+                  el: '.swiper-pagination',
+                  dynamicBullets: true
+              }
+          });
+      }
+
     }
     angular.module('fit88', [])
         .controller('listCtrl',['$scope','$http', listCtrl])

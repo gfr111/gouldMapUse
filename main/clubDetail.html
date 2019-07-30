@@ -5,12 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="chrome=1"/>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width"/>
     <link  rel="stylesheet" href="/static/css/fit.css"/>
+    <link rel="stylesheet" href="/static/css/swiper.min.css" />
+    <link rel="stylesheet" href="/static/css/animate.min.css" />
     <base href="/"/>
     <title>场馆信息</title>
     <script>
         document.documentElement.style.fontSize = document.documentElement.clientWidth/3.75+'px'
     </script>
     <script src="static/js/lib/angular.min.js"></script>
+
 </head>
 <body ng-controller="detailCtrl">
   <div class="clubDetailBox">
@@ -20,13 +23,24 @@
           <!--<span style="width:0.3rem;height: 0.3rem;margin-right: 0.18rem;"></span>-->
       <!--</div>-->
       <span class="returnBtn" ng-click="rerurnIndex()">返回</span>
-      <img  ng-src="{{clubDetail.photo==null?'/static/img/defaultClub.jpg':clubDetail.photo[0]}}" class="clubDaetailBanner" />
+      <img src="/static/img/defaultClub.jpg" ng-if="clubDetail.photo==null"  class="clubDaetailBanner"  ng-cloak=""/>
+      <div class="swiper-container" ng-if="clubDetail.photo!=null" ng-cloak="">
+          <div class="swiper-wrapper">
+              <div class="swiper-slide" ng-repeat="item in clubDetail.photo">
+                  <p class="ani" swiper-animate-effect="fadeInUp" swiper-animate-duration="0.5s" swiper-animate-delay="0.3s">
+                   <img  ng-src="{{item}}" class="clubDaetailBanner" />
+                </p>
+              </div>
+          </div>
+          <div class="swiper-pagination" style="margin-bottom: 10px;"></div>
+      </div>
       <div class="clunDetailMess">
           <div class="detailMessLeft">
               <div class="detailName" ng-bind="clubDetail.name"></div>
-              <div class="detailTips">
-                  <span>台球</span>
+              <div class="detailTips" ng-if="clubDetail.specials!=null">
+                  <span ng-repeat="item in clubDetail.specials">{{item}}</span>
               </div>
+              <div class="detailTips" ng-if="clubDetail.specials==null" style="font-size: 0.12rem;">暂无项目</div>
           </div>
           <img ng-src="{{clubDetail.logo==null?'/static/img/logo.png':clubDetail.photo[0]}}"  class="detailLogo"/>
       </div>
@@ -34,11 +48,19 @@
           <img src="/static/img/banner.png" class="fitImg"/>
           <div class="openItemBox">
               <span class="openItemName">开放项目</span>
-              <span class="openItemContent" ng-bind="clubDetail.fit88FreeItems">健身器械、羽毛球、篮球、拳击、游泳、各类操课</span>
+              <span class="openItemContent" ng-bind="clubDetail.fit88FreeItems"></span>
           </div>
-          <div class="openItemBox" style="margin-bottom: 0;">
+          <div class="openItemBox">
               <span class="openItemName">开放日期</span>
-              <span class="openItemContent" ng-bind="clubDetail.fit88Time">8月8/9/10日三天10:00至22:00</span>
+              <span class="openItemContent" ng-bind="clubDetail.fit88Time"></span>
+          </div>
+          <div class="centerMessItem">
+              <span class="messItemLeft">联系方式</span>
+              <div class="messItemRight">
+                  <span ng-bind="clubDetail.fit88ContactName+' '+clubDetail.fit88ContactPhone"></span>
+                  <a href="tel:{{clubDetail.fit88ContactPhone}}" style="width: 0.16rem;height: 0.16rem" ng-if="clubDetail.fit88ContactPhone"><img src='/static/img/phone.png' class="icons" /></a>
+
+              </div>
           </div>
       </div>
       <div class="discountBox">
@@ -83,7 +105,7 @@
           <div class="centerMessItem">
               <span class="messItemLeft">联系方式</span>
               <div class="messItemRight">
-                  <span>{{clubDetail.contractName||'--'}} {{clubDetail.contactPhone||'--'}}</span>
+                  <span>{{clubDetail.contactName||'--'}} {{clubDetail.contactPhone||'--'}}</span>
                   <a href="tel:{{clubDetail.contactPhone}}" style="width: 0.16rem;height: 0.16rem" ng-if="clubDetail.contactPhone"><img src='/static/img/phone.png' class="icons" /></a>
 
               </div>
@@ -107,10 +129,13 @@
     club = /*[[${club}]]*/ null;
     /*]]>*/
 </script>
-  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-<script src="https://webapi.amap.com/js/marker.js"></script>
-<script src="https://webapi.amap.com/maps?v=1.4.15&amp;key=632935e1cc9ce16eda4143e88ee3ba7d"></script>
-<script src="/static/js/map.js"></script>
-<script type="text/javascript" src="https://webapi.amap.com/demos/js/liteToolbar.js"></script>
+     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+     <script src="https://webapi.amap.com/js/marker.js"></script>
+      <script src="/static/js/lib/swiper.min.js"></script>
+      <script src="/static/js/lib/swiper.animate.min.js"></script>
+      <script src="https://webapi.amap.com/maps?v=1.4.15&amp;key=632935e1cc9ce16eda4143e88ee3ba7d"></script>
+      <script src="/static/js/map.js"></script>
+     <script type="text/javascript" src="https://webapi.amap.com/demos/js/liteToolbar.js"></script>
+
 </body>
 </html>
