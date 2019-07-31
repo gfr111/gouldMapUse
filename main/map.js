@@ -2,13 +2,46 @@
     function listCtrl($scope, $http){
         $scope.showClubCard=false;
         $scope.showSearch=false;
+        $scope.keyword='';
+        var walking;
         if (!$scope.$$phase) $scope.$apply();
+
+        // 获取输入提示信息
+        $scope.autoInput=function(){
+            if($scope.keyword==''){
+                $scope.showSearch=false;
+                $scope.searchResultList=[];
+            }else{
+                $scope.searchResultList=[];
+                AMap.plugin('AMap.Autocomplete', function(){
+                    // 实例化Autocomplete
+                    var autoOptions = {
+                        city: 'hangzhou'
+                    }
+                    var autoComplete = new AMap.Autocomplete(autoOptions);
+                    autoComplete.search($scope.keyword, function(status, result) {
+                        if(result.info=='OK'){
+                            $scope.showSearch=true;
+                            var list=result.tips;
+                            for(var i=0,len=list.length;i<len;i++){
+                                if(list[i].location!=undefined&&list[i].location!=''&&list[i].location!=null){
+                                    $scope.searchResultList.push(list[i]);
+                                }
+                            }
+                            if (!$scope.$$phase) $scope.$apply();
+                        }
+                    })
+                })
+            }
+        }
+        $scope.autoInput();
+        //获取当前位置信息
         var map = new AMap.Map('container',{
             resizeEnable: true,
             mapStyle: 'amap://styles/whitesmoke',
-            zoom:14
+            zoom:14,
+            fitView: true
         });
-        //获取当前位置信息
         AMap.plugin('AMap.Geolocation', function() {
             var geolocation = new AMap.Geolocation({
                 enableHighAccuracy: true,//是否使用高精度定位，默认:true
@@ -19,10 +52,11 @@
             geolocation.getCurrentPosition(function(status,result){
                 if(status=='complete'){
                     $scope.position=result.position;
+                    $scope.startAdress=result.formattedAddress;
                     map.setZoomAndCenter(14, [$scope.position.lng, $scope.position.lat]);
                     //监听定位按钮
                     AMap.event.addDomListener(document.getElementById('positionIcon'), 'click', function() {
-                        map.setZoomAndCenter(16, [$scope.position.lng, $scope.position.lat]);
+                        map.setZoomAndCenter(14, [$scope.position.lng, $scope.position.lat]);
                         addMarker($scope.position.lng, $scope.position.lat);
                         $scope.showClubCard=false;
                         if (!$scope.$$phase) $scope.$apply();
@@ -34,6 +68,9 @@
         });
         //给标签设置文本
         function addMarker(num1,num2) {
+            if(walking){
+                walking.clear();
+            }
             var icon = new AMap.Icon({
                 image: "https://bocai-center.oss-cn-hangzhou.aliyuncs.com/center_manager/static_img/personal.png",
                 size: new AMap.Size(28, 30)
@@ -91,15 +128,23 @@
                 markers.push(marker);
                 marker.on('click', clickHandler);
             }
-            //显示所有的场馆
-            // map.setFitView();
             var hideCard=function () {
                 $scope.showClubCard=false;
+                if(walking){
+                    walking.clear();
+                }
                 if (!$scope.$$phase) $scope.$apply();
             }
             // 绑定事件
             map.on('click', hideCard);
         }
+        $scope.hideClub=function () {
+            $scope.showClubCard=false;
+            if(walking){
+                walking.clear();
+            }
+            if (!$scope.$$phase) $scope.$apply();
+        };
         $scope.conditions={
             clubMessage:''
         }
@@ -125,12 +170,12 @@
         mapInitialization(clubs);
          $scope.navList=[
             {name:'全部',id:0,selected:true},
-            {name:'健身',id:1,selected:false},
+            {name:'健身房',id:1,selected:false},
             {name:'综合馆',id:2,selected:false},
-            {name:'篮球',id:3,selected:false},
-            {name:'游泳',id:4,selected:false},
+            {name:'篮球场',id:3,selected:false},
+            {name:'游泳馆',id:4,selected:false},
             {name:'体适能',id:5,selected:false},
-            {name:'足球',id:6,selected:false},
+            {name:'足球场',id:6,selected:false},
             {name:'皮划艇',id:7,selected:false},
              {name:'滑步车',id:8,selected:false}
         ];
@@ -138,7 +183,11 @@
          $scope.selectNav=function (id) {
              $scope.clubType=id;
              $scope.keyword='';
+             map.getAllOverlays('marker');
              map.setZoom(14);
+             if(walking){
+                 walking.clear();
+             }
              $scope.showClubCard=false;
              if (!$scope.$$phase) $scope.$apply();
              for(var i=0,len=$scope.navList.length;i<len;i++){
@@ -147,7 +196,6 @@
                  }else{
                      $scope.navList[i].selected=false;
                  }
-
              };
              var arr=[];
              if(id==0){
@@ -159,8 +207,29 @@
                      }
                  };
              }
+             if(isContainer(arr).length==0){
+                 map.setZoom(12);
+                 if(isContainer(arr).length==0){
+                     map.setZoom(10);
+                     if(isContainer(arr).length==0){
+                         map.setZoom(8);
+                     }
+                 }
+             }
              mapInitialization(arr);
          };
+         //判断视野范围内是否有标记点
+         function isContainer(arr) {
+             var bound=map.getBounds();//地图可视区域
+             var containerList=[];
+             for(var i=0,len=arr.length;i<len;i++){
+                 var  point = [arr[i].longitude,arr[i].latitude]
+                 if(bound.contains(point)){
+                     containerList.push(arr[i])
+                 }
+             }
+             return containerList;
+         }
          $scope.toDetail=function () {
                  window.location.href = 'web/h5/88fit/' + $scope.conditions.clubMessage.id;
          };
@@ -185,19 +254,42 @@
              }
          };
          $scope.chooseSearch=function (item) {
-             //搜索结果点击后的数据
-             map.setCenter([item.longitude, item.latitude]);
-             clickHandler(item.id)
+             // //搜索结果点击后的数据
+             map.setZoomAndCenter(14,[item.location.lng, item.location.lat]);
+             $scope.keyword=item.name;
+             // // clickHandler(item.id);
              $scope.showSearch=false;
              if (!$scope.$$phase) $scope.$apply();
-
-         }
+         };
+         $scope.clearKeyWord=function () {
+            $scope.keyword='';
+             $scope.showSearch=false;
+         };
+         $scope.toMaps=function () {
+             AMap.plugin(["AMap.Walking"], function() {
+                 var drivingOption = {
+                     map:map
+                 };
+                 if(walking){
+                     walking.clear();
+                 }
+                walking = new AMap.Walking(drivingOption); //构造驾车导航类
+                 //根据起终点坐标规划驾车路线
+                 walking.search([{keyword:$scope.startAdress,city:'hangzhou'},{keyword:$scope.conditions.clubMessage.name,city:'hangzhou'}], function(status, result){
+                     walking.searchOnAMAP({
+                         origin:result.origin,
+                         destination:result.destination
+                     })
+                 });
+             });
+         };
     }
     function detailCtrl($scope, $http){
           $scope.clubDetail=club;
           $scope.showLeft=false;
           $scope.showRight=true;
-            //获取本周日期
+          var walking;
+        //获取本周日期
          $scope.getWeek=function(i,needDate) {
                 var now = needDate?needDate:new Date();
                 var firstDay=new Date(now);
@@ -278,8 +370,9 @@
                 }
 
             };
-        var map = new AMap.Map('maps', {
-            resizeEnable: true
+         var map = new AMap.Map('maps', {
+            resizeEnable: true,
+            dragEnable: false, // 地图是否可通过鼠标拖拽平移，默认为true
         });
         function addMarker() {
             var icon = new AMap.Icon({
@@ -298,7 +391,7 @@
         $scope.rerurnIndex=function () {
             window.location.href='web/h5/88fit';
         };
-      window.onload=function () {
+        window.onload=function () {
           var mySwiper = new Swiper('.swiper-container',{
               autoplay: true,//可选选项，自动滑动
               speed:300,
@@ -308,6 +401,34 @@
               }
           });
       }
+      AMap.plugin('AMap.Geolocation', function() {
+            geolocation.getCurrentPosition(function(status,result){
+                if(status=='complete'){
+                    $scope.position=result.position;
+                    $scope.startAdress=result.formattedAddress;
+                }else{
+                    alert('定位失败！')
+                }
+            });
+        });
+        $scope.toMaps=function () {
+            AMap.plugin(["AMap.Walking"], function() {
+                var drivingOption = {
+                    map:map
+                };
+                if(walking){
+                    walking.clear();
+                }
+                walking = new AMap.Walking(drivingOption); //构造驾车导航类
+                //根据起终点坐标规划驾车路线
+                walking.search([{keyword:$scope.startAdress,city:'hangzhou'},{keyword:$scope.clubDetail.name,city:'hangzhou'}], function(status, result){
+                    walking.searchOnAMAP({
+                        origin:result.origin,
+                        destination:result.destination
+                    })
+                });
+            });
+        };
 
     }
     angular.module('fit88', [])

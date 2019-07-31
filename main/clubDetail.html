@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <meta http-equiv="X-UA-Compatible" content="chrome=1"/>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width"/>
-    <link  rel="stylesheet" href="/static/css/fit.css"/>
+    <link  rel="stylesheet" href="/static/css/fit.css?v=2"/>
     <link rel="stylesheet" href="/static/css/swiper.min.css" />
     <link rel="stylesheet" href="/static/css/animate.min.css" />
     <base href="/"/>
@@ -12,8 +12,8 @@
     <script>
         document.documentElement.style.fontSize = document.documentElement.clientWidth/3.75+'px'
     </script>
-    <script src="static/js/lib/angular.min.js"></script>
-
+    <script th:if="${isDev}" src="static/js/lib/angular.min.js"></script>
+    <script th:if="${!isDev}" src="https://cdn.bocai.centerimg.woshipt.com/88fit/angular.min.js"></script>
 </head>
 <body ng-controller="detailCtrl">
   <div class="clubDetailBox">
@@ -23,10 +23,10 @@
           <!--<span style="width:0.3rem;height: 0.3rem;margin-right: 0.18rem;"></span>-->
       <!--</div>-->
       <span class="returnBtn" ng-click="rerurnIndex()">返回</span>
-      <img src="/static/img/defaultClub.jpg" ng-if="clubDetail.photo==null"  class="clubDaetailBanner"  ng-cloak=""/>
-      <div class="swiper-container" ng-if="clubDetail.photo!=null" ng-cloak="">
+      <img src="/static/img/defaultClub.jpg" ng-if="clubDetail.photos==null"  class="clubDaetailBanner"  ng-cloak=""/>
+      <div class="swiper-container" ng-if="clubDetail.photos!=null" ng-cloak="">
           <div class="swiper-wrapper">
-              <div class="swiper-slide" ng-repeat="item in clubDetail.photo">
+              <div class="swiper-slide" ng-repeat="item in clubDetail.photos">
                   <p class="ani" swiper-animate-effect="fadeInUp" swiper-animate-duration="0.5s" swiper-animate-delay="0.3s">
                    <img  ng-src="{{item}}" class="clubDaetailBanner" />
                 </p>
@@ -42,7 +42,7 @@
               </div>
               <div class="detailTips" ng-if="clubDetail.specials==null" style="font-size: 0.12rem;">暂无项目</div>
           </div>
-          <img ng-src="{{clubDetail.logo==null?'/static/img/logo.png':clubDetail.photo[0]}}"  class="detailLogo"/>
+          <img ng-src="{{clubDetail.logo==null?'/static/img/logo.png':clubDetail.logo}}"  class="detailLogo"/>
       </div>
       <div class="fitFestival" ng-if="clubDetail.fit88Enabled">
           <img src="/static/img/banner.png" class="fitImg"/>
@@ -74,8 +74,8 @@
       </div>
       <div class="courseReserva">
           <div class="courseReservaTitle">
-              <span>惠</span>
-              <span>商家优惠</span>
+              <span style="background:linear-gradient(180deg,rgba(149,188,250,1) 0%,rgba(121,123,200,1) 100%);">订</span>
+              <span>课程预约</span>
           </div>
           <div class="timeBox">
                <img src="/static/img/timeLeft.png" class="leftTimeBtn" style="margin-right: 0.1rem;" ng-click="subDate()" ng-if="showLeft"/>
@@ -107,21 +107,20 @@
               <div class="messItemRight">
                   <span>{{clubDetail.contactName||'--'}} {{clubDetail.contactPhone||'--'}}</span>
                   <a href="tel:{{clubDetail.contactPhone}}" style="width: 0.16rem;height: 0.16rem" ng-if="clubDetail.contactPhone"><img src='/static/img/phone.png' class="icons" /></a>
-
               </div>
           </div>
           <div class="centerMessItem">
               <span class="messItemLeft">地点</span>
-              <div class="messItemRight">
-                  <span>{{clubDetail.address}}</span>
-                  <!--<img src='/static/img/address.png' class="icons" />-->
+              <div class="messItemRight" style="width: 72%;">
+                  <span style="width: 88%;overflow: hidden;text-overflow: ellipsis; white-space: nowrap;" ng-click="toMaps()">{{clubDetail.address}}</span>
+                  <img src='/static/img/detailMap.png' class="maps"  ng-click="toMaps()"/>
               </div>
           </div>
           <div id="maps"></div>
       </div>
       <div class="centerMessBox">
           <div class="centerMessTitle">场馆介绍</div>
-          <div class="introduce">XXXXXXXXXXXXXXXXXXXXX</div>
+          <div class="introduce">暂无场馆介绍</div>
       </div>
   </div>
 <script th:inline="javascript">
@@ -130,12 +129,9 @@
     /*]]>*/
 </script>
      <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-     <script src="https://webapi.amap.com/js/marker.js"></script>
       <script src="/static/js/lib/swiper.min.js"></script>
       <script src="/static/js/lib/swiper.animate.min.js"></script>
       <script src="https://webapi.amap.com/maps?v=1.4.15&amp;key=632935e1cc9ce16eda4143e88ee3ba7d"></script>
-      <script src="/static/js/map.js"></script>
-     <script type="text/javascript" src="https://webapi.amap.com/demos/js/liteToolbar.js"></script>
-
+      <script src="/static/js/map.js?v=2"></script>
 </body>
 </html>

@@ -4,13 +4,14 @@
     <meta charset="UTF-8"/>
     <meta http-equiv="X-UA-Compatible" content="chrome=1"/>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width"/>
-    <link  rel="stylesheet" href="/static/css/fit.css"/>
+    <link  rel="stylesheet" href="/static/css/fit.css?v=2"/>
     <base href="/"/>
-    <title>88fit</title>
+    <title>全民健身</title>
     <script>
         document.documentElement.style.fontSize = document.documentElement.clientWidth/3.75+'px'
     </script>
-    <script src="static/js/lib/angular.min.js"></script>
+    <script th:if="${isDev}" src="static/js/lib/angular.min.js"></script>
+    <script th:if="${!isDev}" src="https://cdn.bocai.centerimg.woshipt.com/88fit/angular.min.js"></script>
 </head>
 <body ng-controller="listCtrl">
 <div class="clubBox">
@@ -20,10 +21,11 @@
             <div class="speech">您好！</div>
             <div class="search">
                 <image src="/static/img/searchIcon.png" class="searchImg" />
-                <input placeholder="位置/地名/场馆" class="searchInput"  ng-model="keyword" />
-                <text class="searchBtn" ng-click="searchEvent()">搜索</text>
+                <input placeholder="位置/地名/场馆" class="searchInput"  ng-model="keyword" id="input-info" ng-change="autoInput()" ng-keypress="($event.which === 13)?autoInput():0"/>
+                <img src="/static/img/clear.png" class="clearIcon" ng-if="keyword!=''" ng-click="clearKeyWord()" ng-cloak=""/>
             </div>
-            <ul class="searchResultBox" ng-if="showSearch" ng-cloak="">
+
+            <ul class="searchResultBox" ng-show="showSearch" ng-cloak="">
                 <li ng-repeat="item in searchResultList" ng-click="chooseSearch(item)">{{item.name}}</li>
             </ul>
         </div>
@@ -43,11 +45,12 @@
         </div>
     </div>
     <div id="container" tabindex="0"></div>
+    <div class="compareName" ng-if="!showClubCard" ng-cloak="">杭州反掌数据科技有限公司</div>
     <image src="/static/img/position.png" id="positionIcon" class="{{showClubCard?'bottomHas':'noBottom'}}"/>
     <div style="position: fixed;bottom:0" ng-if="showClubCard" ng-cloak="">
-        <div class="clubCard " ng-click="toDetail()" >
-            <span class="lines"></span>
-            <div style="display: flex;align-items: center;justify-content: space-between;width: 100%;position: relative;">
+        <div class="clubCard " >
+            <span class="lines" ng-click="hideClub()"></span>
+            <div style="display: flex;align-items: center;justify-content: space-between;width: 100%;position: relative;" >
                 <div class="clubMess" >
                     <image class="logo" ng-src="{{conditions.clubMessage.logo?conditions.clubMessage.logo:'/static/img/logo.png'}}"/>
                     <div class="areaName" ng-bind="conditions.clubMessage.districtName"></div>
@@ -55,10 +58,15 @@
                     <div class="tipsBox">
                         <span ng-bind="conditions.clubMessage.fit88FreeItems"></span>
                     </div>
+                    <!--<input type='button' id='callApp' class="btn" value='点击调起高德地图' ng-click="toMaps()"/>-->
+                    <div id='callApp'  ng-click="toMaps()">
+                        <img src="/static/img/map.png" class="mapIcon" />
+                        <span>导航</span>
+                    </div>
                 </div>
-                <div class="imgBox">
+                <div class="imgBox" ng-click="toDetail()" >
                     <image src="/static/img/88fit.png" class="fitIcon" ng-if="conditions.clubMessage.fit88Enabled"/>
-                    <image ng-src="{{conditions.clubMessage.logo?conditions.clubMessage.logo:'/static/img/defaultClub.jpg'}}"  class="clubPicture" />
+                    <image ng-src="{{conditions.clubMessage.photos?conditions.clubMessage.photos[0]:'/static/img/defaultClub.jpg'}}"  class="clubPicture" />
                 </div>
             </div>
         </div>
@@ -79,11 +87,9 @@
     clubs = /*[[${clubs}]]*/ null;
     /*]]>*/
 </script>
-<script src="https://webapi.amap.com/js/marker.js"></script>
 <script src="https://webapi.amap.com/maps?v=1.4.15&amp;key=632935e1cc9ce16eda4143e88ee3ba7d"></script>
 <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-<script src="/static/js/map.js"></script>
+<script src="/static/js/map.js?v=2"></script>
 <!--<script src="/static/js/map2.js"></script>-->
-<script type="text/javascript" src="https://webapi.amap.com/demos/js/liteToolbar.js"></script>
 </body>
 </html>

@@ -38,7 +38,7 @@ body,html{
     border-radius: 20px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    /*justify-content: space-between;*/
     margin-right:0.2rem;
 }
 .searchImg{
@@ -48,9 +48,9 @@ body,html{
     margin-right:0.1rem;
 }
 .searchInput{
-    width: 1.7rem;
+    width: 1.9rem;
     border: 0;
-    height:35px;
+    height:30px;
     outline: none;
     background-color: #F5F5F5;
 }
@@ -59,8 +59,8 @@ body,html{
     height: 0.32rem;
     background-color: #0058FD;
     color: #FFFFFF;
-    font-size: 0.14rem;
-   display: flex;
+    font-size: 14px;
+    display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 30px;
@@ -116,7 +116,7 @@ body,html{
     height: 1.35rem;
     background: #FFFFFF;
     z-index: 200;
-    border-radius: 0.08rem  0.08rem  0px  0px;
+    border-radius: 8px;
 
     display: flex;
     align-items: center;
@@ -127,14 +127,16 @@ body,html{
     height:4px;
     background: #E6E7EE;
     margin-top: 5px;
+    border-radius: 4px;
 }
 .logo{
     width:0.36rem;
     height: 0.36rem;
     border-radius: 50%;
     position: absolute;
-    top: -0.18rem;
+    top: -0.26rem;
     border: 1px solid #ffffff;
+    background: #FFFFFF;
 }
 .tipsBox{
     display: flex;
@@ -145,14 +147,14 @@ body,html{
 .areaName{
      color: #1B6CF2;
     font-size: 0.1rem;
-    margin-top: 30px;
+    margin-top: 16px;
 }
 .clubName{
     color: #303030;
     font-size: 0.16rem;
-    margin-top:7px;
+    margin-top:2px;
     font-weight: 600;
-    margin-bottom:24px;
+    margin-bottom:8px;
     width:1.85rem;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -168,6 +170,7 @@ body,html{
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    margin-bottom:10px;
 }
 .amap-icon>img{
     width:100%;
@@ -454,7 +457,6 @@ body,html{
 .introduce{
     color: #303030;
     font-size: 0.14rem;
-    text-indent: 0.2rem;
 }
 .returnBtn{
     width:0.5rem;
@@ -555,7 +557,7 @@ a:link {
 .timeBoxs>span:nth-child(2){
     color: #797979;
     font-size: 0.12rem;
-    width: 100%;
+    width:2rem;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -597,11 +599,49 @@ a:link {
 }
 .searchResultBox li{
     list-style: none;
-    font-size:14px;
+    font-size:0.14rem;
     height: 48px;
     line-height: 48px;
     border-bottom:1px solid #F3F3F3;
-    margin-left: 15px;
-    margin-right: 15px;
-
+    margin-left: 0.15rem;
+    margin-right: 0.15rem;
+}
+.clearIcon{
+    width:0.16rem;
+    height: 0.16rem;
+    margin-left: 0.1rem;
+}
+.compareName{
+    color: #303030;
+    font-size: 10px;
+    position: fixed;
+    bottom:11px;
+    z-index:110;
+    width:100%;
+    text-align: center;
+}
+.opMap{
+    font-size: 14px;
+}
+#callApp{
+    width: 0.65rem;
+    height: 25px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    background-color: #0058FD;
+    border-radius: 100px;
+}
+.mapIcon{
+    width:14px;
+    height: 14px;
+    margin-right:2px;
+}
+#callApp>span{
+    color: #FFFFFF;
+    font-size: 0.12rem;
+}
+.maps{
+    width:18px;
+    height: 18px;
 }
