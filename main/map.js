@@ -3,6 +3,7 @@
         $scope.showClubCard=false;
         $scope.showSearch=false;
         $scope.keyword='';
+        $scope.isLoading=false;
         var walking;
         if (!$scope.$$phase) $scope.$apply();
 
@@ -266,6 +267,7 @@
              $scope.showSearch=false;
          };
          $scope.toMaps=function () {
+             $scope.isLoading=true;
              AMap.plugin(["AMap.Walking"], function() {
                  var drivingOption = {
                      map:map
@@ -276,15 +278,20 @@
                 walking = new AMap.Walking(drivingOption); //构造驾车导航类
                  //根据起终点坐标规划驾车路线
                  walking.search([{keyword:$scope.startAdress,city:'hangzhou'},{keyword:$scope.conditions.clubMessage.name,city:'hangzhou'}], function(status, result){
-                     walking.searchOnAMAP({
-                         origin:result.origin,
-                         destination:result.destination
-                     })
+                     if(status=='complete'){
+                         $scope.isLoading=false;
+                         walking.searchOnAMAP({
+                             origin:result.origin,
+                             destination:result.destination
+                         })
+                     }
+
                  });
              });
          };
     }
     function detailCtrl($scope, $http){
+          $scope.isLoading=false;
           $scope.clubDetail=club;
           $scope.showLeft=false;
           $scope.showRight=true;
@@ -412,6 +419,7 @@
             });
         });
         $scope.toMaps=function () {
+            $scope.isLoading=true;
             AMap.plugin(["AMap.Walking"], function() {
                 var drivingOption = {
                     map:map
@@ -422,10 +430,13 @@
                 walking = new AMap.Walking(drivingOption); //构造驾车导航类
                 //根据起终点坐标规划驾车路线
                 walking.search([{keyword:$scope.startAdress,city:'hangzhou'},{keyword:$scope.clubDetail.name,city:'hangzhou'}], function(status, result){
-                    walking.searchOnAMAP({
-                        origin:result.origin,
-                        destination:result.destination
-                    })
+                    if(status=='complete'){
+                        $scope.isLoading=false;
+                        walking.searchOnAMAP({
+                            origin:result.origin,
+                            destination:result.destination
+                        })
+                    }
                 });
             });
         };
